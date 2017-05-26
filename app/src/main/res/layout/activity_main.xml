@@ -10,8 +10,18 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:id="@+id/uploadFileToS3"
+        android:text="Upload File"
+        android:onClick="uploadFileToS3" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/uploadFileToS3"
         android:id="@+id/fetchFileToS3"
-        android:text="Show Files on S3"
+        android:text="Show and Download Files"
         android:onClick="fetchFileFromS3" />
 
     <ListView

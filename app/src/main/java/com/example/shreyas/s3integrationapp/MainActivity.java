@@ -1,8 +1,11 @@
 package com.example.shreyas.s3integrationapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
@@ -46,18 +49,17 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     ArrayAdapter<String> adapter;
     static final int MY_REQUEST_CODE = 1;
+    File uploadToS3;
 
     String rootPath;
-    private ArrayList<HashMap<String, Object>> transferRecordMaps;
-    private List<TransferObserver> observers;
     private List<S3ObjectSummary> s3ObjList;
+    boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(R.id.viewFiles);
-        transferRecordMaps = new ArrayList<HashMap<String, Object>>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -176,9 +178,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void fetchFileFromS3(View view){
+    public void uploadFileToS3(View view){
+        String upPath = Environment.getExternalStorageDirectory().toString() + "/Pictures/Twitter";
+        uploadToS3 = new File(upPath, "IMG_20170515_132939.jpg");
 
+        TransferObserver transferObserver = transferUtility.upload(
+                bucket,     /* The bucket to upload to */
+                "IMG_20170515_132939.jpg",    /* The key for the uploaded object */
+                uploadToS3       /* The file where the data to upload exists */
+        );
+
+        transferObserverListener(transferObserver);
+        sync();
+        if(flag)
+            adapter.notifyDataSetChanged();
+    }
+
+    public void fetchFileFromS3(View view){
         // display List of files from S3 Bucket
+        flag = true;
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, listing);
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
